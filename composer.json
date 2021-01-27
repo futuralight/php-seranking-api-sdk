@@ -9,5 +9,10 @@
     }],
     "require": {
         "ext-curl": "*"
-    }
+    },
+    "autoload": {
+        "psr-4": {
+            "Futuralight\\SerankingApiSdk\\": "src"
+        }
+    },
 }
