@@ -2,6 +2,7 @@
     "name": "futuralight/php-seranking-api-sdk",
     "description": "Seranking API SDK",
     "type": "library",
+    "minimum-stability": "dev",
     "authors": [{
         "name": "futuralight",
         "email": "futuralight@outlook.com"
