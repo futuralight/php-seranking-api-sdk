@@ -1,0 +1,12 @@
+{
+    "name": "futuralight/php-seranking-api-sdk",
+    "description": "Seranking API SDK",
+    "type": "library",
+    "authors": [{
+        "name": "futuralight",
+        "email": "futuralight@outlook.com"
+    }],
+    "require": {
+        "ext-curl": "*"
+    }
+}
