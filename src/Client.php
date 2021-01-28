@@ -14,6 +14,11 @@ class Client
     protected const URL_SITE_CHART = 'https://api4.seranking.com/sites/%s/chart';
     protected const URL_SITE_CHECK_DATES = 'https://api4.seranking.com/sites/%s/check-dates';
     protected const URL_SITE_RECHECK = 'https://api4.seranking.com/sites/%s/recheck';
+    protected const URL_SITE_POSITIONS = 'https://api4.seranking.com/sites/%s/positions';
+    protected const URL_SYSTEM_SEARCH_ENGINES = 'https://api4.seranking.com/system/search-engines';
+    protected const URL_SYSTEM_YANDEX_REGIONS = 'https://api4.seranking.com/system/yandex-regions';
+    protected const URL_SYSTEM_VOLUME = 'https://api4.seranking.com/system/yandex-regions';
+    protected const URL_KEYWORD_GROUPS = 'https://api4.seranking.com/keyword-groups';
 
     public function __construct(string $token)
     {
@@ -123,6 +128,27 @@ class Client
             sprintf(self::URL_SITE_RECHECK, $siteId),
             [
                 'keywords' => $keywords
+            ]
+        );
+    }
+
+    /*
+     * Статистика по ключевым словам
+     * Метод позволяет получить статистику проверки позиций 
+     * по ключевым словам проекта за выбранный период.
+     */
+    public function sitePositions(string $siteId)
+    {
+        return $this->getMethod(sprintf(self::URL_SITE_POSITIONS, $siteId));
+    }
+
+    public function createKeywordsGroup(string $siteId, string $name)
+    {
+        return $this->postMethod(
+            self::URL_KEYWORD_GROUPS,
+            [
+                'name' => $name,
+                'site_id' => $siteId
             ]
         );
     }
