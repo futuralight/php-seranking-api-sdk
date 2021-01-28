@@ -10,6 +10,10 @@ class Client
     protected const URL_BALANCE = 'https://api4.seranking.com/account/balance';
     protected const URL_SITES = 'https://api4.seranking.com/sites';
     protected const URL_SITE_KEYWORDS = 'https://api4.seranking.com/sites/%s/keywords';
+    protected const URL_SITE_STATISTICS = 'https://api4.seranking.com/sites/%s/stat';
+    protected const URL_SITE_CHART = 'https://api4.seranking.com/sites/%s/chart';
+    protected const URL_SITE_CHECK_DATES = 'https://api4.seranking.com/sites/%s/check-dates';
+    protected const URL_SITE_RECHECK = 'https://api4.seranking.com/sites/%s/recheck';
 
     public function __construct(string $token)
     {
@@ -95,6 +99,31 @@ class Client
         return $this->postMethod(
             sprintf(self::URL_SITE_KEYWORDS, $siteId),
             $keywords
+        );
+    }
+
+    public function siteStatistics(string $siteId)
+    {
+        return $this->getMethod(sprintf(self::URL_SITE_STATISTICS, $siteId));
+    }
+
+    public function siteChart(string $siteId)
+    {
+        return $this->getMethod(sprintf(self::URL_SITE_CHART, $siteId));
+    }
+
+    public function siteCheckDates(string $siteId)
+    {
+        return $this->getMethod(sprintf(self::URL_SITE_CHECK_DATES, $siteId));
+    }
+
+    public function siteRecheck(string $siteId, array $keywords = [])
+    {
+        return $this->postMethod(
+            sprintf(self::URL_SITE_RECHECK, $siteId),
+            [
+                'keywords' => $keywords
+            ]
         );
     }
 }
