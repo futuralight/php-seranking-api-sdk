@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Futuralight\SerankingApiSdk;
 
+use Psalm\Internal\Scanner\FunctionDocblockComment;
+
 class Client
 {
     protected $token;
-    protected const URL_BALANCE = 'https://api4.seranking.com/account/balance';
+    protected const URL_BALANCE = 'https://api4.seranking.com/account/balance?with_landing_pages=1';
     protected const URL_SITES = 'https://api4.seranking.com/sites';
     protected const URL_SITE_KEYWORDS = 'https://api4.seranking.com/sites/%s/keywords';
     protected const URL_SITE_STATISTICS = 'https://api4.seranking.com/sites/%s/stat';
@@ -19,6 +21,8 @@ class Client
     protected const URL_SYSTEM_YANDEX_REGIONS = 'https://api4.seranking.com/system/yandex-regions';
     protected const URL_SYSTEM_VOLUME = 'https://api4.seranking.com/system/yandex-regions';
     protected const URL_KEYWORD_GROUPS = 'https://api4.seranking.com/keyword-groups';
+    protected const URL_KEYWORD_GROUPS_KEYWORDS = 'https://api4.seranking.com/keyword-groups/%s/keywords';
+    protected const URL_SITE_KEYWORDS_KEYWORD_ID = 'https://api4.seranking.com/sites/%s/keywords/%s';
 
     public function __construct(string $token)
     {
@@ -49,7 +53,34 @@ class Client
         return $curl;
     }
 
-    protected function closeCurlAndGetContent($curl): array
+    protected function initDeleteCurl(string $url)
+    {
+        $curl = curl_init($url); //task_id 171333640
+        curl_setopt_array($curl, [
+            CURLOPT_HTTPHEADER => ["Authorization: Token {$this->token}"],
+            CURLOPT_HEADER => 0,
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_POST => true,
+            CURLOPT_CUSTOMREQUEST => 'DELETE'
+        ]);
+        return $curl;
+    }
+
+    protected function initPatchCurl(string $url, array $patchData)
+    {
+        $curl = curl_init($url); //task_id 171333640
+        curl_setopt_array($curl, [
+            CURLOPT_HTTPHEADER => ["Authorization: Token {$this->token}"],
+            CURLOPT_HEADER => 0,
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_POST => true,
+            CURLOPT_CUSTOMREQUEST => 'PATCH',
+            CURLOPT_POSTFIELDS => json_encode($patchData)
+        ]);
+        return $curl;
+    }
+
+    protected function closeCurlAndGetContent($curl)
     {
         $content = json_decode(curl_exec($curl), true);
         curl_close($curl);
@@ -64,6 +95,16 @@ class Client
     protected function postMethod(string $url, array $fields)
     {
         return $this->closeCurlAndGetContent($this->initPostCurl($url, $fields));
+    }
+
+    protected function patchMethod(string $url, array $fields)
+    {
+        return $this->closeCurlAndGetContent($this->initPatchCurl($url, $fields));
+    }
+
+    protected function deleteMethod(string $url)
+    {
+        return $this->closeCurlAndGetContent($this->initDeleteCurl($url));
     }
 
     public function balance()
@@ -85,7 +126,7 @@ class Client
         string $siteId,
         string $keyword,
         string $groupId,
-        string $targetUrl,
+        string $targetUrl = '',
         bool $isStrict = false
     ) {
         return $this->postMethod(
@@ -151,5 +192,39 @@ class Client
                 'site_id' => $siteId
             ]
         );
+    }
+
+    public function changeKeyword(string $siteId, string $keywordId, string $keyword, string $targetUrl)
+    {
+        $data = [];
+        if ($keyword) {
+            $data['keyword'] = $keyword;
+        }
+        if ($targetUrl) {
+            $data['target_url'] = $targetUrl;
+        }
+        return $this->patchMethod(
+            sprintf(self::URL_SITE_KEYWORDS_KEYWORD_ID, $siteId, $keywordId),
+            $data
+        );
+    }
+
+    public function moveKeywordsToGroup(string $groupId, array $keywordsIds)
+    {
+        return $this->postMethod(
+            sprintf(self::URL_KEYWORD_GROUPS_KEYWORDS, $groupId),
+            [
+                'keywords_ids' => $keywordsIds
+            ]
+        );
+    }
+
+    public function deleteKeywords(string $siteId, array $keywordsIds)
+    {
+        $paramsString = '?';
+        foreach ($keywordsIds as $keywordId) {
+            $paramsString .= "keywords_ids[]={$keywordId}&";
+        }
+        return $this->deleteMethod(sprintf(self::URL_SITE_KEYWORDS . $paramsString, $siteId));
     }
 }
