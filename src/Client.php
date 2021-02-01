@@ -9,15 +9,16 @@ use Psalm\Internal\Scanner\FunctionDocblockComment;
 class Client
 {
     protected $token;
-    protected const URL_BALANCE = 'https://api4.seranking.com/account/balance?with_landing_pages=1';
+    protected const URL_BALANCE = 'https://api4.seranking.com/account/balance';
     protected const URL_SITES = 'https://api4.seranking.com/sites';
     protected const URL_SITE_KEYWORDS = 'https://api4.seranking.com/sites/%s/keywords';
     protected const URL_SITE_STATISTICS = 'https://api4.seranking.com/sites/%s/stat';
     protected const URL_SITE_CHART = 'https://api4.seranking.com/sites/%s/chart';
     protected const URL_SITE_CHECK_DATES = 'https://api4.seranking.com/sites/%s/check-dates';
     protected const URL_SITE_RECHECK = 'https://api4.seranking.com/sites/%s/recheck';
-    protected const URL_SITE_POSITIONS = 'https://api4.seranking.com/sites/%s/positions';
+    protected const URL_SITE_POSITIONS = 'https://api4.seranking.com/sites/%s/positions?with_landing_pages=1';
     protected const URL_SYSTEM_SEARCH_ENGINES = 'https://api4.seranking.com/system/search-engines';
+    protected const URL_SITES_SEARCH_ENGINES = 'https://api4.seranking.com/sites/%s/search-engines';
     protected const URL_SYSTEM_YANDEX_REGIONS = 'https://api4.seranking.com/system/yandex-regions';
     protected const URL_SYSTEM_VOLUME = 'https://api4.seranking.com/system/yandex-regions';
     protected const URL_KEYWORD_GROUPS = 'https://api4.seranking.com/keyword-groups';
@@ -161,6 +162,11 @@ class Client
     public function siteCheckDates(string $siteId)
     {
         return $this->getMethod(sprintf(self::URL_SITE_CHECK_DATES, $siteId));
+    }
+
+    public function siteSearchEngines(string $siteId)
+    {
+        return $this->getMethod(sprintf(self::URL_SITES_SEARCH_ENGINES, $siteId));
     }
 
     public function siteRecheck(string $siteId, array $keywords = [])
